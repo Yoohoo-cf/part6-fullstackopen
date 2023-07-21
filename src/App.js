@@ -1,26 +1,44 @@
 import AnecdoteForm from './components/AnecdoteForm'
-import Notification from './components/Notification'
+
+import { useQueryClient, useMutation, useQuery } from 'react-query'
+import { getAnecdotes, updateAnecdote  } from './requests'
 
 const App = () => {
 
+  const queryClient = useQueryClient()
+
+  const updateAnecdoteMutation = useMutation(updateAnecdote, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('anecdotes')
+    }
+  })
+ 
+
   const handleVote = (anecdote) => {
-    console.log('vote')
+    updateAnecdoteMutation.mutate({ ...anecdote, votes: anecdote.votes + 1})
   }
 
-  const anecdotes = [
-    {
-      "content": "If it hurts, do it more often",
-      "id": "47145",
-      "votes": 0
-    },
-  ]
+  const result = useQuery('anecdotes', getAnecdotes, {
+    retry: 1
+  })
+
+  if ( result.isLoading) {
+    return <div>loading date...</div>
+  }
+
+  if ( result.isError) {
+    return <span>Error: anecdote service is not available due to problems in server</span>
+  }
+
+  const anecdotes = result.data
 
   return (
     <div>
       <h3>Anecdote app</h3>
     
-      <Notification />
+  
       <AnecdoteForm />
+    
     
       {anecdotes.map(anecdote =>
         <div key={anecdote.id}>
@@ -33,7 +51,7 @@ const App = () => {
           </div>
         </div>
       )}
-    </div>
+     </div>
   )
 }
 
