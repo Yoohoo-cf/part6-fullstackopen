@@ -13,9 +13,14 @@ const createNew = async(content) => {
     return response.data
 }
 
+const updateAnecdote = updatedAnecdote => 
+   axios.put(`${baseUrl}/${updatedAnecdote.id}`, updatedAnecdote).then(res =>
+    res.data)
+
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
     getAll, 
-    createNew
+    createNew,
+    updateAnecdote
 }

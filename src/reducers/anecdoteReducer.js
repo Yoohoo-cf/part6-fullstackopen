@@ -42,5 +42,4 @@ export const createAnecdote = content => {
 }
 
 
-
 export default anecdoteSlice.reducer
